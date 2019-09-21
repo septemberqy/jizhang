@@ -1,0 +1,111 @@
+@errMsgColor:red;
+
+.loginbtn{
+    display:block;
+    width:80%;
+    height:2em;
+    margin:1em auto;
+    font-size:1em;
+    border:0px;
+    border-radius: 15px;
+    color:#fff;
+    background: linear-gradient(left, #ffb65d,#ff4e85);
+    outline:none;
+}
+
+
+.loginbox{
+    display:flex;
+    flex-direction: column;
+    .title{
+        font-size:26px;
+        font-weight: bold;
+        width:80%;
+        text-align: left;
+        margin:5.5em auto 0em;
+        color:#555;
+        opacity: 0.8;
+    }
+    .infobox{
+        width:100%;
+        .msg{
+            color:@errMsgColor;
+            text-align:center;
+        }
+    }
+    
+    .btn:extend(.loginbtn){
+        outline:none;
+    }
+    
+    .text{
+        display:flex;
+        justify-content:space-between;
+        padding-left:10%;
+        padding-right:10%;
+        box-sizing: border-box;
+        color:#666;
+        a{
+            text-decoration: none;
+            color:#666;
+        }
+    }
+}
+
+.registbox{
+    display:flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    margin-top:5em;
+    .vcodebox,.vimgbox{
+        display:flex;
+        flex-direction: row;
+        align-items: center;
+        #vcode,#vimgcode{
+            width:50%;
+            margin-right:1em;
+        }
+        .imgbtn{
+            width:25%;
+            height:3em;
+            border-radius: 8px;
+            outline: none;
+            border:0px;
+            box-shadow: 0.2em 0.2em 0.2em rgba(0, 0,0,0.2);
+        }
+    }
+
+    .btn:extend(.loginbtn){
+        outline:none;
+    }
+
+    .errMsg{
+        text-align: center;
+        color:@errMsgColor;
+    }
+    // .vimgbox{
+    //     display:flex;
+    //     flex-direction: row;
+    //     align-items: center;
+    //     #vimgcode{
+    //         width:50%;
+    //         margin-right:1em;
+    //     }
+    // }
+}
+
+
+input{
+    height:3em;
+    font-size:16px;
+    width:80%;
+    border-radius: 3px;
+    padding-left:1em;
+    outline: none;
+    margin:0.5em auto;
+    margin-left:10%;
+    box-sizing: border-box;
+    border:0px;
+    border-bottom:1px solid #b5b5b5;
+}
+

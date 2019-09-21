@@ -1,0 +1,41 @@
+@inColor:red;
+@outColor:green;
+@totalColor:orange;
+
+.detail{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width:100%;
+    height:3em;
+    padding:0.2em 0.5em;
+    box-sizing: border-box;
+    align-items: center;
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+    .left{
+        display:flex;
+        flex-direction: row;
+        align-items: center;
+         .icon{
+            width:1.5em!important;
+            height:1.5em;
+       }   
+        span{
+            line-height: 2em;
+        }
+    }
+
+    .right{
+        display:flex;
+        flex-direction: row;
+        align-items: center;
+        .in{
+            color:@inColor;
+        }
+        .righticon{
+            width:1em;
+        }
+    }
+   
+}
