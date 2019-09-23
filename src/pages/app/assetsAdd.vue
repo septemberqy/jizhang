@@ -87,7 +87,6 @@
                 this.show=false;
             },
             addAccount:function(){
-                // console.log(`api/account/update?id=${this.$route.query.id}&token=${token}`);
                 var regPos = /^\d+(\.\d+)?$/; 
                this.account_money= regPos.test(this.account_money)?this.account_money:"";
    
@@ -100,7 +99,6 @@
                 }
                 axios.post(this.GLOBAL_.apiUrl+`api/account/create?token=${this.token}`,qs.stringify(params)).then(
                     res=>{
-                        console.log(res)
                         if(res.data.code==0){
                             this.$toast('保存成功');
                             this.$router.go(-1)

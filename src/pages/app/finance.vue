@@ -91,10 +91,8 @@
         },
         methods:{
             getHome:function(){
-                console.log(this.token);
                 axios.get(this.GLOBAL_.apiUrl+"api/view/home?token="+this.token).then(
                     res=>{
-                        console.log(res);
                         this.detailItems = res.data.data.account;
                         this.waitIn = res.data.data.waitingForCollection; 
                         this.waitOut = res.data.data.waitingForPayment;
@@ -107,7 +105,6 @@
             getId:function(){
                 axios.get(this.GLOBAL_.apiUrl+"api/account?token="+this.token).then(
                     res=>{
-                        console.log(res);
                     }
                 )
             },
@@ -140,7 +137,6 @@
                             }
                             legendData.push(item.name);
                         }
-                        // console.log(seriesData);
                         if(this.isShow=="in"){
                             bt(legendData,seriesInData,"myChart",this.detailItems.month+"收入");
                         }

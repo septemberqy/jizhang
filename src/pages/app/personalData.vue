@@ -47,13 +47,11 @@
 
             this.getInfo();
             if(this.personal!=""){
-                console.log(this.personal.mobile);
                 // this.showPhone = this.personal.mobile.split("");
             }
         },
         methods:{
             afterRead:function(file){
-                console.log(file);
                 let fd = new FormData();
                 let key="";
                 fd.append('file', file.file)
@@ -61,7 +59,6 @@
                      'Content-Type': 'multipart/form-data'
                 }}).then(
                     res=>{
-                        console.log(res);
                         key = res.data.data.file.fileKey;
                         let params={
                             avatar:key

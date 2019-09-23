@@ -79,7 +79,6 @@
                 this.show=false;
             },
             updateAccount:function(){
-                // console.log(`api/account/update?id=${this.$route.query.id}&token=${token}`);
                 let params={
                     name:this.name,
                     type:this.type,
@@ -88,7 +87,6 @@
                 }
                 axios.post(this.GLOBAL_.apiUrl+`api/account/update?id=${this.$route.query.id}&token=${token}`,qs.stringify(params)).then(
                     res=>{
-                        console.log(res)
                         if(res.data.code==0){
                             this.$toast('保存成功');
                             this.$router.go(-1)

@@ -162,7 +162,6 @@
                 )
             },
             afterRead:function(file){
-                console.log(file);
                 let fd = new FormData()
                 fd.append('file', file.file)
                
@@ -170,7 +169,6 @@
                      'Content-Type': 'multipart/form-data'
                  }}).then(
                                 res=>{
-                                    console.log(res);
                                     let key = res.data.data.file.fileKey;
                                     this.imageList.push(key);
                                     this.tmpImageList.push(res.data.data.file.thumbnailUrl._temp);

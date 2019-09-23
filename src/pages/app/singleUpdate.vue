@@ -130,13 +130,11 @@
                                     this.imageList = this.imageList.concat(item.images)
                                }
                         }
-                        console.log(this.imageList);
                     }
                 )
             },
             afterRead:function(file){
                 
-                console.log(file);
                 let id = this.$route.query.iid;
                 let fd = new FormData()
                 fd.append('file', file.file)
@@ -144,9 +142,7 @@
                      'Content-Type': 'multipart/form-data'
                  }}).then(
                                 res=>{
-                                    console.log(res);
                                     let key = res.data.data.file.fileKey;
-                                    console.log(key);
                                     let params={
                                         image_keys:key
                                     }

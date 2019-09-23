@@ -76,7 +76,6 @@
                 axios.post(this.GLOBAL_.apiUrl+`api/sms/verify`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.code==0){
-                            console.log(res);
                             this.imgyzm="";
                             this.show=false;
                         }

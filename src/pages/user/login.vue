@@ -44,14 +44,12 @@
 				};
 				await axios.post(url,qs.stringify(param)).then(
 					 data=>{
-						console.log(data);
 						if(data.data.status==false){
 							this.isErr=true;
 							this.errMsg = data.data.data;
 						}
 						else{
 							localStorage.setItem("accessToken",data.data.data.token);		
-							console.log(data.data.data.token)	
 						}
 				}).then(()=>{
 					this.$router.push("/finance");

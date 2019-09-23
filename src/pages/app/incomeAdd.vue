@@ -48,7 +48,6 @@
                 axios.post(this.GLOBAL_.apiUrl+`api/category/create?token=${this.token}`,qs.stringify(params)).then(
                     res=>{
                         
-                        console.log(res);
                         if(res.data.code==0){
                             this.$toast("添加成功");
                             this.$router.go(-1);

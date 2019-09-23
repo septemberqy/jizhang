@@ -29,7 +29,6 @@
                }
                axios.post(this.GLOBAL_.apiUrl+`api/member/add?token=${this.token}`,qs.stringify(params)).then(
                    res=>{
-                       console.log(res);
                        if(res.data.code==0){
                            this.$toast("添加成功");
                            this.$router.push('memberMange');

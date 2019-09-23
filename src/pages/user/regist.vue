@@ -59,7 +59,6 @@
             },
             getImg:function(){
                 axios.get(this.GLOBAL_.apiUrl+"api/captcha").then(res=>{
-                    console.log(res);
                     this.vimg = res.data.data.url;
                     this.vimgkey = res.data.data.key;
                     this.vimgcode = "";
@@ -74,7 +73,6 @@
                 }
                 axios.post(this.GLOBAL_.apiUrl+"api/user/register",qs.stringify(param),this.GLOBAL_.headers)
                 .then(res=>{
-                    console.log(res);
                     if(res.data.status==false){
                         this.errMsg = res.data.data;
                     }

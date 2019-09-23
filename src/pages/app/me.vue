@@ -67,7 +67,6 @@
 
             this.getInfo();
             if(this.personal!=""){
-                console.log(this.personal.mobile);
                 // this.showPhone = this.personal.mobile.split("");
             }
         },

@@ -79,7 +79,6 @@
                         
                         axios.get(this.GLOBAL_.apiUrl+`api/member?token=${this.token}&book_id=${this.id}`).then(
                         res=>{
-                            console.log(res);
                             this.members = res.data.data;
                         }
                         )

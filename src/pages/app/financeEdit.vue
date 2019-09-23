@@ -177,22 +177,18 @@
             },
             afterRead:function(file){
                 
-                console.log(file);
                 let fd = new FormData()
                 fd.append('file', file.file)
                  axios.post(this.GLOBAL_.apiUrl+`api/upload/image?token=${this.token}`,fd,{headers: {
                      'Content-Type': 'multipart/form-data'
                  }}).then(
                                 res=>{
-                                    console.log(res);
                                     let key = res.data.data.file.fileKey;
-                                    console.log(key);
                                     let params={
                                         image_keys:key
                                     }
                                     axios.post(this.GLOBAL_.apiUrl+`api/record/item/update?itemId=${this.id}&token=${this.token}`,qs.stringify(params)).then(
                                         res=>{
-                                            console.log(res);
                                         }
                                     )
                                 }
@@ -202,12 +198,10 @@
                 this.id = this.$route.query.id;
                 axios.get(this.GLOBAL_.apiUrl+`api/record/detail?id=${this.id}&token=${this.token}`).then(
                     res=>{
-                        console.log(res);
                         this.accountData = res.data.data;
                         for(let item of res.data.data.items){
                             this.imageList = this.imageList.concat(item.images);
                         }
-                        console.log(this.imageList);
                     }
                 )
             },

@@ -48,9 +48,7 @@
                 
                 axios.post(this.GLOBAL_.apiUrl+`api/category/update?id=${id}&token=${this.token}`,qs.stringify(params)).then(
                     res=>{
-                        console.log(this.name);
-                        console.log(id);
-                        console.log(res);
+    
                         if(res.data.code==0){
                             this.$toast("修改成功");
                             this.$router.go(-1);

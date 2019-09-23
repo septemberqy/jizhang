@@ -86,7 +86,6 @@
             getBook:function(){
                 axios.get(this.GLOBAL_.apiUrl+`api/book?token=${this.token}`).then(
                     res=>{
-                        console.log(res)
                         this.books=res.data.data;
                         
                     }
@@ -101,7 +100,6 @@
             },
             getDefault:function(itemId){
                 if(itemId==this.defaultId){
-                    console.log(itemId,this.defaultId);
                     return "当前账簿"
                 }
             },
