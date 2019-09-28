@@ -15,16 +15,16 @@
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
      .mesBox{
         width:14em;
-        height:6em;
+        height:6.8em;
         display:flex;
         flex-direction: column;
         .mesTitle{
             width:3em;
             margin:0.5em auto;
-            color:#000;
+            color:#666;
             font-weight: bold
         }
         .mesMes{
@@ -35,6 +35,7 @@
         }
         .mesChosebox{
             display:flex;
+            margin-top:1em;
             justify-content: space-between;
             .chose{
                 width:50%;
@@ -43,7 +44,12 @@
                 line-height: 2em;
                 border:1px solid #eee;
             }
-            
+            .cancel{
+                color:green;
+            }
+            .del{
+                color:red;
+            }
         }
     }
 </style>

@@ -22,7 +22,7 @@
         }
     }
 </script>
-<style lang="less">
+<style lang="less" scoped>
     @import  "../../css/detail.less";
    
 </style>

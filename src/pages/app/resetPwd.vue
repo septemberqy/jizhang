@@ -76,6 +76,7 @@
                 axios.post(this.GLOBAL_.apiUrl+`api/sms/verify`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.code==0){
+                            this.$toast(res.data.data)
                             this.imgyzm="";
                             this.show=false;
                         }
@@ -105,11 +106,13 @@
     }
 </script>
 
-<style lang="less">
-@import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+<style lang="less" scoped>
+    @import "../../css/public.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
+    
     .resetPwdbox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     input{
         width:100%;

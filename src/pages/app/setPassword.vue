@@ -30,6 +30,10 @@
         },
         methods:{
             updatePwd:function(){
+                 this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 if(this.newPwd==this.newPwd2){
                     let params={
                         password:this.oldPwd,
@@ -38,11 +42,11 @@
                     axios.post(this.GLOBAL_.apiUrl+`api/user/password?token=${this.token}`,qs.stringify(params)).then(
                         res=>{
                             if(res.data.code==0){
-                                this.$toast(res.data.data);
-                                this.$router.push('/set');
+                                this.waitPush(this,res.data.data,"set")
+                               
                             }
                             else{
-                                this.$toast(res.data.data);
+                                this.$toast.fail(res.data.data);
                                 this.oldPwd=this.newPwd=this.newPwd2="";
                             }
                         }
@@ -56,12 +60,13 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
 
     .passwordBox{
-        margin-top:5em;
+        margin-top:@marginTop;
         display:flex;
         flex-direction: column;
         .pwdInput{

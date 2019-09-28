@@ -18,7 +18,7 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import top from "../../components/public/top";
     import axios from "axios";
     import qs from "qs";
@@ -51,44 +51,58 @@
         },
         methods:{
             doAct:function(){
-                if(this.$route.query.act=="update"){
-                    let params = {
-                        book_id:this.$route.query.id,
-                        book_name:this.name
-                    }
-                    axios.post(this.GLOBAL_.apiUrl+`api/book/update?token=${this.token}`,qs.stringify(params)).then(
-                        res=>{
-                            if(res.data.status==true){
-                                this.$toast("修改成功");
-                                this.$router.go(-1);
-                            }
-                            else{
-                                 this.$toast(res.data.data);
-                            }
+                if(this.name==""){
+                    this.$toast("请输入账簿名称")
+                }
+                else{
+                    this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    if(this.$route.query.act=="update"){
+                        let params = {
+                            book_id:this.$route.query.id,
+                            book_name:this.name
                         }
-                    )
-                }else if(this.$route.query.act=="new"){
-                    let params = {
-                        name:this.name
+                        axios.post(this.GLOBAL_.apiUrl+`api/book/update?token=${this.token}`,qs.stringify(params)).then(
+                            res=>{
+                                if(res.data.status==true){
+                                    this.waitPush(this,"修改成功",-1)
+                                
+                                }
+                                else{
+                                    this.$toast.fail(res.data.data);
+                                }
+                            }
+                        )
+                    }else if(this.$route.query.act=="new"){
+                        let params = {
+                            name:this.name
+                        }
+                        axios.post(this.GLOBAL_.apiUrl+`api/book/create?token=${this.token}`,qs.stringify(params)).then(
+                            res=>{
+                                if(res.data.status==true){
+                                    this.waitPush(this,"创建成功","bookmange")
+                                }
+                                else{
+                                    this.$toast.fail(res.data.data);
+                                }
+                            }
+                        )
                     }
-                     axios.post(this.GLOBAL_.apiUrl+`api/book/create?token=${this.token}`,qs.stringify(params)).then(
-                         res=>{
-                             if(res.data.status==true){
-                                 this.$toast("创建成功");
-                                 this.$router.push("bookmange");
-                             }
-                         }
-                     )
                 }
             }
         }
     }
 </script>
 
-<style lang="less">
+
+<style lang="less" scoped>
     @import "../../css/public.less";
+    @import "../../css/const.less";
+
     .bookEdit{
-        margin-top:5em;
+        margin-top:@marginTop;
         .bookBtn{
             margin-top:1em;
         }

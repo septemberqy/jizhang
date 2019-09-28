@@ -3,7 +3,7 @@
         <div class="bak" v-if="members.length==0">
             还没有成员
         </div>
-        <van-swipe-cell  v-for="(item,index) in members" :key=index class="">
+        <van-swipe-cell  v-for="(item,index) in members" :key=index class="cateType">
             <van-cell :border="false" :title=item.mobile />
             <template slot="right">
                 <van-button square type="danger" text="删除" @click="showPopup(id,item.id)"/>
@@ -46,6 +46,10 @@
         },
         methods:{
             delMember:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 let params={
                     book_id:this.id,
                     user_id:this.user_id
@@ -54,11 +58,13 @@
                     res=>{
                         if(res.data.code==0){
                             this.show=false;
-                            this.$toast(res.data.data)
-                            this.getBook();
+                            this.waitPush(this,"删除成功","none");
+                            setTimeout(()=>{
+                                this.getBook();
+                            },this.GLOBAL_.waittime)
                         }
                         else{
-                            this.$toast(res.data.data)
+                            this.$toast.fail(res.data.data)
 
                         }
                     }
@@ -72,14 +78,23 @@
                 this.$router.push({path:url,query:{id}});
             },
             getBook:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+`api/book/get-default?token=${this.token}`).then(
                     res=>{
-
                         this.id = res.data.data.id;
-                        
                         axios.get(this.GLOBAL_.apiUrl+`api/member?token=${this.token}&book_id=${this.id}`).then(
                         res=>{
-                            this.members = res.data.data;
+                            if(res.data.code==0)
+                            {
+                                this.$toast.clear();
+                                this.members = res.data.data;
+                            }
+                            else{
+                                this.$toast.fail(res.data.data);
+                            }
                         }
                         )
                     }
@@ -89,12 +104,18 @@
     }
 </script>
 
-<style lang="less">
+
+<style lang="less" scoped>
     @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
 
     .memberMangeBox{
-        margin-top:5em;
+        margin-top:@marginTop;
+        .cateType{
+            border-bottom:1px solid #eee;
+            margin:0 auto;
+        }
     }
     .memberMangeBtn{
         margin-top:1em;

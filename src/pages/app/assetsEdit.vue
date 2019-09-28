@@ -21,26 +21,26 @@
             <van-radio-group v-model="type" v-show=show>
                         <van-radio class="radiobox" v-for="(items,index) in typeList" :key=index :name=items.typeId @click="showType(items.name)">{{items.name}}</van-radio>
             </van-radio-group>
-            <textarea class="message" v-model="remark" placeholder="备注"></textarea>
-            <div class="addBottom bottombase" @click="updateAccount">
+            <textarea class="message" v-model="remark" placeholder="备注" ></textarea>
+            <div class="bottombase" @click="updateAccount">
                         修改
             </div>
     </div>
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
-    import titleCell from "../../components/public/titil-cell";
+    import inputBox from "../../components/remember/inputDetail";
+    import titleCell from "../../components/public/titilCell";
     import axios from "axios";
     import qs from "qs";
-    let token = localStorage.getItem("accessToken");
+    
     export default{
         data(){
             return {
                 name:this.$route.query.name,
                 show:false,
                 type:"",
-               
+                token:"",
                 remark:"",
                 typeList:[
                     {
@@ -65,6 +65,8 @@
         },
         mounted(){
            this.getTypeName();
+           this.token =  localStorage.getItem("accessToken");
+           this.remark = this.$route.query.remark;
         },
         components:{
             inputBox,
@@ -79,17 +81,23 @@
                 this.show=false;
             },
             updateAccount:function(){
+                 this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 let params={
                     name:this.name,
                     type:this.type,
                     remark:this.remark,
                     sort:10
                 }
-                axios.post(this.GLOBAL_.apiUrl+`api/account/update?id=${this.$route.query.id}&token=${token}`,qs.stringify(params)).then(
+                axios.post(this.GLOBAL_.apiUrl+`api/account/update?id=${this.$route.query.id}&token=${this.token}`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.code==0){
-                            this.$toast('保存成功');
-                            this.$router.go(-1)
+                            this.waitPush(this,"保存成功",-1)
+                        }
+                        else{
+                            this.$toast.fail(res.data.data);
                         }
                     }
                 )
@@ -107,12 +115,15 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
     @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 
   

@@ -36,8 +36,8 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
-    import titleCell from "../../components/public/titil-cell";
+    import inputBox from "../../components/remember/inputDetail";
+    import titleCell from "../../components/public/titilCell";
     import axios from "axios";
     import qs from "qs";
     export default{
@@ -87,24 +87,39 @@
                 this.show=false;
             },
             addAccount:function(){
-                var regPos = /^\d+(\.\d+)?$/; 
-               this.account_money= regPos.test(this.account_money)?this.account_money:"";
+               
    
-                let params={
-                    name:this.name,
-                    type:this.type,
-                    remark:this.remark,
-                    sort:10,
-                    initial_balance:this.account_money
+                if(this.name==undefined){
+                    this.$toast("账户名称不能为空")
                 }
-                axios.post(this.GLOBAL_.apiUrl+`api/account/create?token=${this.token}`,qs.stringify(params)).then(
-                    res=>{
-                        if(res.data.code==0){
-                            this.$toast('保存成功');
-                            this.$router.go(-1)
-                        }
+                else if(this.typeName==""){
+                    this.$toast("请选择资产类型")
+                }
+                else{
+                     this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    var regPos = /^\d+(\.\d+)?$/; 
+                    this.account_money= regPos.test(this.account_money)?this.account_money:"";
+                    let params={
+                        name:this.name,
+                        type:this.type,
+                        remark:this.remark,
+                        sort:10,
+                        initial_balance:this.account_money
                     }
-                )
+                    axios.post(this.GLOBAL_.apiUrl+`api/account/create?token=${this.token}`,qs.stringify(params)).then(
+                        res=>{
+                            if(res.data.code==0){
+                                this.waitPush(this,"保存成功",-1)
+                            }
+                            else{
+                                this.$toast.fail(res.data.data)
+                            }
+                        }
+                    )
+                }
             },
             getTypeName: function(){
                     
@@ -119,12 +134,14 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
-    @import "../../css/public.less";
 
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
+    @import "../../css/const.less";
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 
      

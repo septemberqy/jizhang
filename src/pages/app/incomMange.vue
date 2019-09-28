@@ -7,8 +7,10 @@
                 <van-button square type="danger" text="删除" @click="showPopup(item.id)"/>
             </template>
         </van-swipe-cell>
-        <div class="addBottom bottombase" @click="goToUrl('incomeadd')" v-if="this.categroyData!=''">
-                        添加收入类别
+        <div class="btnBox">
+            <div class="incomeMangeBtn bottombase" @click="goToUrl('incomeadd')" v-if="this.categroyData!=''">
+                            添加收入类别
+            </div>
         </div>
         <van-popup v-model="show">
             <msgBox>
@@ -23,15 +25,29 @@
     </div>
 </template>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     .cateType{
         border-bottom:1px solid #eee;
         margin:0 auto;
+    }
+
+    .btnBox{
+        position:fixed;
+        bottom:0em;
+        width:100%;
+        height:4em;
+        background:#fff;
+        .incomeMangeBtn{
+            margin-top:1em;
+        }
     }
     // .van-swipe-cell {
     //     margin:0 auto;
@@ -41,7 +57,7 @@
 </style>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import msgBox from "../../components/public/mesBox";
 
     import axios from "axios";
@@ -67,10 +83,20 @@
         },
         methods:{
              getCategroy:function(token){
+                 this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 this.categroy = []
                 axios.get(this.GLOBAL_.apiUrl+"api/category?token="+token+"&type=1").then(
                     res=>{
-                        this.categroyData = res.data.data
+                        if(res.data.code==0){
+                            this.$toast.clear();
+                            this.categroyData = res.data.data
+                        }
+                        else{
+                            this.$toast.fail(res.data.data)
+                        }
                     }
                 )
             },
@@ -82,12 +108,21 @@
                 this.show=true;
             },
             delCategroy:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.post(this.GLOBAL_.apiUrl+`api/category/delete?id=${this.id}&token=${this.token}`).then(
                     res=>{
                         if(res.data.code==0){
-                            this.$toast("删除成功");
-                            this.getCategroy(this.token);
+                            this.$toast.success("删除成功");
                             this.show=false;
+                            setTimeout(()=>{
+                                this.getCategroy(this.token);
+                            },1000)
+                        }
+                        else{
+                            this.$toast.fail(res.data.data)
                         }
                     }
                 )

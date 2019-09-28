@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="box">
         <div v-show=mainPage>
             <div class="topChoise">
                     <div class="in base" :class="{'is-back':Bk}" @click="changeBk('in')">
@@ -12,11 +12,11 @@
             </div>
             <inputBox>
                 <span slot="deco" class="base">账面{{keyword}}</span>
-                <input type="text" name="number" placeholder="0.00" slot="input" v-model=total_money>
+                <input type="text" name="number" placeholder="0.00" slot="input" v-model=total_money class="remeberInput">
             </inputBox>
             <inputBox>
                 <span slot="deco" class="base">交易对象</span>
-                <input type="text" name="obj" placeholder="交易对象" slot="input" v-model=obj>
+                <input type="text" name="obj" placeholder="交易对象" slot="input" v-model=obj  class="remeberInput">
             </inputBox>
             <inputBox>
                 <span slot="deco" class="base">{{act}}款方式</span>
@@ -80,6 +80,10 @@
                 @cancel="cancelTime"
             />
             </van-popup>
+            
+            
+            
+                
             <textarea class="message" v-model="message" placeholder="备注"></textarea>
             <div class="addBtn" @click="saveFinance">
                 添加账目
@@ -112,14 +116,15 @@
 
 
 <script>
-    import inputBox from "../../components/remember/input-detail"
+    import inputBox from "../../components/remember/inputDetail"
     import radiobox from "../../components/remember/radiobox"
     import axios from "axios"
     import qs from "qs"
-    import categroyItem from "../../components/remember/categroy-item"
+    import categroyItem from "../../components/remember/categroyItem"
     export default{
         data(){
             return {
+                voShow:false,
                 token:"",
                 Bk:true,
                 keyword:"收入",
@@ -133,7 +138,7 @@
                 payAccount:"0",
                 mainPage:true,
                 currentDate: new Date(),
-                 minDate: new Date(),
+                 minDate: new Date(2018,1,1),
                  maxDate: new Date(),
                  show: false,
                  addTime : "",
@@ -287,9 +292,14 @@
                 )
             },
             saveFinance:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
+                
                 let param = {
                     total_money:this.total_money,
-                    money:this.money,
+                    money:this.payMethod==1?this.total_money:this.money,
                     company_name:this.obj,
                     account_id:this.payAccount,
                     category_id:this.categroyId,
@@ -299,7 +309,13 @@
                 }
                 axios.post(this.GLOBAL_.apiUrl+"api/record/create?token="+this.token,qs.stringify(param)).then(
                     res=>{
-                        this.$router.go(-1);
+                        if(res.data.code==0){
+                            this.$toast.success("保存成功")
+                            this.$router.go(-1);
+                        }
+                        else{
+                            this.$toast.fail(res.data.data);
+                        }
                     }
                 )
             }
@@ -307,26 +323,31 @@
     }
 </script>
 
-<style lang="less">
+
+<style lang="less" scoped>
+    @import "../../css/const.less";
+    @import "../../../node_modules/vant/lib/index.css";
     @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
-    .topChoise{
-        width:60%;
-        height:2em;
-        margin:6em auto 2em;
-        display:flex;
-        border:1px solid @background;
-        .base{
-            width:50%;
-            text-align: center;
-            line-height: 2em;
-            font-size:16px;
-            color:#000;
-            font-weight: bold;
-        }
-        .is-back{
-            background:@background;
-            color:#fff;
+    .box{
+        margin-top:@marginTop;
+        .topChoise{
+            width:60%;
+            height:2em;
+            margin:4em auto 2em;
+            display:flex;
+            border:1px solid @background;
+            .base{
+                width:50%;
+                text-align: center;
+                line-height: 2em;
+                font-size:16px;
+                color:#666;
+                font-weight: bold;
+            }
+            .is-back{
+                background:@background;
+                color:#fff;
+            }
         }
     }
    
@@ -359,7 +380,7 @@
   .categroybox{
         width:90%;
         height:6em;
-        margin:6em auto 0;
+        margin:3em auto 0;
         display:flex;
         flex-wrap: wrap;
         flex-direction: row;

@@ -1,11 +1,11 @@
 <template>
     <div class="financebox">
         <div class="headerNav">
-            <div class="date" @click="show('month')" :class="{ active: isActive('month') }">当月收支</div>
-            <div class="date"  @click="show('month3')" :class="{ active: isActive('month3') }">季度收支</div>
-            <div class="date" @click="show('month12')" :class="{ active: isActive('month12') }">当年收支</div>
+            <div class="date" @click="show('month','clr')" :class="{ active: isActive('month') }">当月收支</div>
+            <div class="date"  @click="show('month3','clr')" :class="{ active: isActive('month3') }">季度收支</div>
+            <div class="date" @click="show('month12','clr')" :class="{ active: isActive('month12') }">当年收支</div>
         </div>
-        <div class="pageInfo">
+        <div class="pageInfo" v-if="type==3">
             <div class="info">
                     <span class="pageTitle">{{pageTitle}}:</span><em class="green">{{beginData}}</em> - <em class="green">{{endData}}</em>
             </div>
@@ -21,9 +21,23 @@
                 </div>
             </div>
         </div>
+        <div class="pageInfoWait" v-else >
+            <div class="info">
+                <div class="infoDetail wait">
+                    <span class="pageTitle">待<span v-if="type==2">支出</span><span v-else>收入</span>总金额: <span class="orange">{{total}}</span></span>
+                </div>
+            </div>
+        </div>
         <div class="main">
             
 
+            <van-list
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+            :immediate-check=false  
+            >
             <financeDetailCell v-for="(item,index) in accountList" :key=index :id=item.id>
                 <img src="../../assets/images/pay_money.png" slot="typeIcon"  class="typeIcon" v-if="item.type==2">
                 <img src="../../assets/images/income_money.png" slot="typeIcon"  class="typeIcon" v-if="item.type==1">
@@ -34,8 +48,9 @@
                 </div>
                 <span slot="money" class="money">{{item.total_money}}</span>
             </financeDetailCell>
+</van-list>
+
         </div>
-        <noMore>没有更多数据</noMore>
     </div>
 </template>
 
@@ -48,6 +63,10 @@
     export default{
         data(){
             return {
+                loading: false,
+                finished: false,
+                isLoading: false,
+                currentPage:1,
                 token:"",
                 nowPage:"month",
                 beginData:"",
@@ -56,7 +75,9 @@
                 in:0,
                 out:0,
                 profit:0,
-                accountList:""
+                accountList:[],
+                type:3,
+                total:0
             }
         },
         components:{
@@ -64,16 +85,31 @@
             noMore
         },
         mounted(){
+            
             this.token = localStorage.getItem("accessToken");
             this.show("month");
             this.pageTitle="当月";
+           
         },
+      
         methods:{
+            onLoad() {
+                this.currentPage++;
+                this.show(this.nowPage,'add');
+            },
+            pages:function(){
+                console.log(this.currentPage)
+            },
             isActive:function(val){
                 return this.nowPage==val;
             },
            
-            show:function(val){
+            show:function(val,act){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...',
+                    duration:0
+                });
                 let d = new Date();
                 this.nowPage = val;
                 if(val=="month"){
@@ -119,31 +155,60 @@
                     this.beginData = d.getFullYear()+"-01-01";
                     this.endData = d.getFullYear()+"-12-31";
                 }
-                let params = {
-                    begin_date:this.beginData,
-                    end_date:this.endData,
-                    type:3
+             
+                this.type=this.$route.query.type==undefined?3:this.$route.query.type;
+                let api=""
+                if(act=='clr'){
+                    this.currentPage=1;
+                    this.finished = false;
                 }
-                axios.get(this.GLOBAL_.apiUrl+`api/record/account?token=${this.token}&begin_date=${this.beginData}&end_date=${this.endData}&type=3`).then(
+                if(this.type==3){
+                     api=`api/record/account?token=${this.token}&begin_date=${this.beginData}&end_date=${this.endData}&type=${this.type}&page=${this.currentPage}`
+                }
+                else{
+                    api=`api/record/account/waiting?token=${this.token}&begin_date=${this.beginData}&end_date=${this.endData}&type=${this.type}&page=${this.currentPage}`
+
+                }
+                axios.get(this.GLOBAL_.apiUrl+api).then(
                     res=>{
                         if(res.data.code==0){
+                            this.$toast.clear();
+                            this.pageCount = res.data.data.page.pageCount;
+                            this.itemsPerPge = res.data.data.page.pageSize;
                             this.in = res.data.data.in;
                             this.out = res.data.data.out;
                             this.profit = this.in-this.out;
-                            this.accountList =res.data.data.list;
+                            this.accountList = act=="add"?this.accountList.concat(res.data.data.list):res.data.data.list;
+                            this.total = res.data.data.total;
+                            if(res.data.data.list.length<20){
+                                 this.finished=true
+                            }
+                                this.loading=false;
+
+                        }
+                        else{
+                            this.$toast.clear();
+
                         }
                     }
+                ).catch(
+                    ()=>{this.$toast("请查看网络连接");}
                 )
             }
         }
     }
 </script>
 
-<style lang="less">
-    @import "../../css/public.less";
 
+
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+
+    @import "../../css/public.less";
+    @import "../../css/const.less";
     .financebox{
-        margin-top:5em;
+        margin-top:@marginTop;
         display:flex;
         flex-direction: column;
         .headerNav{
@@ -164,6 +229,7 @@
                 color:@background;
             }
         }
+        
         .pageInfo{
             width:100%;
             height:8em;
@@ -174,6 +240,7 @@
                 display:flex;
                 flex-direction: row;
                 flex-wrap: wrap;
+               
                 .pageTitle{
                     margin-right:1em;
                 }
@@ -189,6 +256,20 @@
                 color:red;
             }
             .orange{
+                color:orange;
+            }
+        }
+        .pageInfoWait{
+            height:4em!important;
+            background:#eee;
+
+             .wait{
+                    margin:1em auto 0;
+                    text-align: center;
+                    font-size:20px;
+                    white-space: nowrap;
+                }
+                .orange{
                 color:orange;
             }
         }

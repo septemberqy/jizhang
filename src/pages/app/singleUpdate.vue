@@ -43,6 +43,9 @@
                 <input type="text" name="obj"  slot="input" v-model=content>
             </span>
         </inputBox>
+        <div class="saveBottom bottombase" @click="updateData">
+                保存
+        </div>
         <van-popup v-model="show"  position="bottom" :style="{ height: '40%',width:'100%'}">
             <van-datetime-picker
                 v-model="currentDate"
@@ -57,12 +60,14 @@
     </div>
 </template>
 
-<style lang="less">
+
+<style lang="less" scoped>
     @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
 
     .singleupdatebox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     
     .saveBottom{
@@ -74,7 +79,7 @@
 <script>
     import axios from "axios";
     import qs from "qs";
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import topBox from "../../components/public/top";
 
     export default{
@@ -102,7 +107,7 @@
                 keyword:"",
                 show:false,
                 currentDate: new Date(),
-                 minDate: new Date(),
+                  minDate: new Date(2018,1,1),
                  maxDate: new Date(),
                  cShow:false,
                  payAccount:"",
@@ -134,28 +139,39 @@
                 )
             },
             afterRead:function(file){
-                
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 let id = this.$route.query.iid;
                 let fd = new FormData()
                 fd.append('file', file.file)
                  axios.post(this.GLOBAL_.apiUrl+`api/upload/image?token=${this.token}`,fd,{headers: {
                      'Content-Type': 'multipart/form-data'
                  }}).then(
-                                res=>{
-                                    let key = res.data.data.file.fileKey;
-                                    let params={
-                                        image_keys:key
-                                    }
-                                    axios.post(this.GLOBAL_.apiUrl+`api/record/item/update?itemId=${id}&token=${this.token}`,qs.stringify(params)).then(
-                                        res=>{
-                                            if(res.data.code==0){
-                                                this.$toast("保存成功");
-                                                this.getImages();
-                                            }
-                                        }
-                                    )
+                        res=>{
+                            if(res.data.code==0){
+                                this.$toast.clear();
+                                let key = res.data.data.file.fileKey;
+                                let params={
+                                    image_keys:key
                                 }
-                            )
+                            
+                                axios.post(this.GLOBAL_.apiUrl+`api/record/item/update?itemId=${id}&token=${this.token}`,qs.stringify(params)).then(
+                                    res=>{
+                                        if(res.data.code==0){
+                                            this.$toast.success("保存成功");
+                                            this.getImages();
+                                        }else{
+                                            this.$toast.fail(res.data.data)
+                                        }
+                                    }
+                                )
+                            }else{
+                                this.$toast.fail(res.data.data)
+                            }
+                        }
+                    )
             },
             getContent:function(){
                 for(let item of this.payAccountData){
@@ -170,13 +186,22 @@
                 this.cShow=!this.cShow;
             },
             getAccount:function(token){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+"api/account?token="+token).then(
                     res=>{
-                        for(let item of res.data.data) {
-                            let sData={};
-                            sData["id"] = item.id;
-                            sData['name'] = item.name;
-                            this.payAccountData.push(sData);
+                        if(res.data.code==0){
+                            this.$toast.clear();
+                            for(let item of res.data.data) {
+                                let sData={};
+                                sData["id"] = item.id;
+                                sData['name'] = item.name;
+                                this.payAccountData.push(sData);
+                            }
+                        }else{
+                            this.$toast.fail(res.data.data)
                         }
                     }
                 )
@@ -193,41 +218,49 @@
                  this.content = changeValue.join("-");
             },
             updateData:function(){
-                let id = this.$route.query.fid==undefined?this.$route.query.iid:this.$route.query.fid;
-                let url =  this.$route.query.fid==undefined?this.GLOBAL_.apiUrl+`api/record/item/update?itemId=${id}&token=${this.token}`:this.GLOBAL_.apiUrl+`api/record/update?id=${id}&token=${this.token}`;
-                let params={};
-                switch(this.keyword){
-                    case "total_money":
-                        params["total_money"]=this.content;
-                        break;
-                    case "company_name":
-                        params["company_name"]=this.content;
-                        break;
-                    case "money":
-                        params["money"]=this.content;
-                        break;
-                    case "date":
-                        params["date"]=this.content;
-                        break;
-                     case "remark":
-                        params["remark"]=this.content;
-                        break;
-                     case "account":
-                        params["account_id"]=this.content;
-                        break;
+                if(this.content==""){
+                    this.$toast("请填入数据")
                 }
-                
-                axios.post(url,qs.stringify(params)).then(
-                    res=>{
-                       if(res.data.code==0){
-                           this.$toast("保存成功");
-                           this.$router.go(-1);
-                       }
-                       else{
-                           this.$toast(res.data.data);
-                       }
-                    }       
-                )        
+                else{
+                    this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    let id = this.$route.query.fid==undefined?this.$route.query.iid:this.$route.query.fid;
+                    let url =  this.$route.query.fid==undefined?this.GLOBAL_.apiUrl+`api/record/item/update?itemId=${id}&token=${this.token}`:this.GLOBAL_.apiUrl+`api/record/update?id=${id}&token=${this.token}`;
+                    let params={};
+                    switch(this.keyword){
+                        case "total_money":
+                            params["total_money"]=this.content;
+                            break;
+                        case "company_name":
+                            params["company_name"]=this.content;
+                            break;
+                        case "money":
+                            params["money"]=this.content;
+                            break;
+                        case "date":
+                            params["date"]=this.content;
+                            break;
+                        case "remark":
+                            params["remark"]=this.content;
+                            break;
+                        case "account":
+                            params["account_id"]=this.content;
+                            break;
+                    }
+                    
+                    axios.post(url,qs.stringify(params)).then(
+                        res=>{
+                        if(res.data.code==0){
+                            this.waitPush(this,"修改成功",-1)
+                        }
+                        else{
+                            this.$toast.fail(res.data.data);
+                        }
+                        }       
+                    )        
+                }
             }
         }
     }

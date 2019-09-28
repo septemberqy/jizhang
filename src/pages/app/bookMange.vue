@@ -1,11 +1,11 @@
 <template>
     <div class="bookmangeBox">
-        <van-swipe-cell  v-for="(item,index) in books" :key=index>
-            <van-cell :border="false" :title="item.name+` (创建者${item.user_name})`" :value="getDefault(item.id)" value-class="bbInputBox" title-class="bbInputBox"/>
+        <van-swipe-cell  v-for="(item,index) in books" :key=index class="cateType">
+            <van-cell :border="false" :title="item.name+` (创建者${item.user_name})`" :value="getDefault(item.id)" />
             <template slot="right">
-                <van-button square type="primary" text="切换" v-if="defaultId!=item.id" @click="changeBook(item.id)"/>
+                <van-button square type="primary" text="切换" :disabled="defaultId==item.id" @click="changeBook(item.id)"/>
                 <van-button square type="warning" text="编辑" @click="goToUrl('bookedit','update',item.id,item.name)" />
-                <van-button square type="danger" text="删除" @click="showMsgBox(item.id)"/>
+                <van-button square type="danger" text="删除" @click="showMsgBox(item.id)" />
             </template>
         </van-swipe-cell>
         <van-popup v-model="show">
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import axios from "axios";
     import qs from  "qs";
    
@@ -47,31 +47,44 @@
         },
         methods:{
             changeBook:function(id){
+                 this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
                 let params={
                     book_id:id
                 }
                 axios.post(this.GLOBAL_.apiUrl+`api/book/set-default?token=${this.token}`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.status){
-                            this.$toast("更换成功");
-                            this.getBook();
+                            this.waitPush(this,"更换成功","none")
+                            setTimeout(()=>{
+                            this.getBook();                                
+                            },this.GLOBAL_.waittime)
                         }
                         else{
-                            this.$toast(res.data.data)
+                            this.$toast.fail(res.data.data)
                         }
                     }
                 )
             },
             delBook:function(){
+                 this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 let params={
                     book_id:this.delId
                 }
                 axios.post(this.GLOBAL_.apiUrl+`api/book/delete?token=${this.token}`,qs.stringify(params)).then(
                      res=>{
                             if(res.data.status==false){
-                                    this.$toast(res.data.data)
+                                    this.$toast.fail(res.data.data)
                             }else{
-                                this.getBook();
+                                this.waitPush(this,"删除成功","none");
+                                setTimeout(()=>{
+                                    this.getBook();
+                                },this.GLOBAL_.waittime)
                             }
                             this.show=false;
                     }
@@ -84,15 +97,31 @@
                 this.delId = id;
             },
             getBook:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+`api/book?token=${this.token}`).then(
                     res=>{
-                        this.books=res.data.data;
+                        if(res.data.code==0){
+                            
+                            this.books=res.data.data;
+                        }
+                        else{
+                            this.$toast.fail(res.data.data)
+                        }
                         
                     }
                 ).then(
                     axios.get(this.GLOBAL_.apiUrl+`api/book/get-default?token=${this.token}`).then(
                         res=>{
-                            this.defaultId=res.data.data.id;
+                            if(res.data.code==0){
+                                this.$toast.clear();
+                                this.defaultId=res.data.data.id;
+                            }
+                            else{
+                                this.$toast.fail(res.data.data)
+                            }
                             
                         }
                     )
@@ -116,13 +145,27 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .bookmangeBox{
-        margin-top:5em;
+        margin-top:@marginTop;
         .bookBtn{
             margin-top:1em;
+        }
+        .cateType{
+            border-bottom:1px solid #eee;
+            margin:0 auto;
+        }
+        .van-cell__title{
+            font-size:16px;
+            color:#666;
+            width:80%;
+            white-space: nowrap;
+            overflow: hidden;
         }
     }
     .bbInputBox{
@@ -131,6 +174,7 @@
         padding:0.5em;
         box-sizing: border-box;
         font-size:16px;
-        white-space: nowrap
+        white-space: nowrap;
+         
     }
 </style>

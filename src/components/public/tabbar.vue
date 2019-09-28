@@ -8,10 +8,10 @@
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     .tabbar{
         width:100%;
-        height:5.025em;
+        height:3em;
         position:absolute;
         bottom:0;
         display:flex;

@@ -1,6 +1,5 @@
 <template>
     <div class="setBox">
-            <div class="bak"></div>
             <inputBox id="setpassword">
                 <span slot="icon" class="base ">
                     <img src="../../assets/images/lock.png" class="bigIcon" >
@@ -23,15 +22,12 @@
                         </span>
                 </span>
             </inputBox>
-            <div class="bak"></div>
-            <div class="bottombase loginBtn" @click="loginOut">
-                退出登陆
-            </div>
+            
     </div>
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
      import  axios from "axios";
     import qs from "qs";
     export default{
@@ -47,31 +43,19 @@
             inputBox
         },
         methods:{
-            loginOut:function(){
-                axios.get(this.GLOBAL_.apiUrl+`api/user/logout?token=${this.token}`).then(
-                    res=>{
-                       if(res.data.code==0){
-                           this.$toast("退出成功");
-                           localStorage.removeItem("accessToken","");
-                           this.$router.push('login');
-                       }
-                       else{
-                           this.$toast(res.data.data);
-
-                       }
-                    }
-                )
-            }
+            
         }
     }
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../css/public.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
 
     .setBox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     .loginBtn{
         margin-top:1em;

@@ -15,6 +15,7 @@
             <input type="text" name="nickname" id="nickname" placeholder="昵称"  v-model="nickname">
             <div class="errMsg">{{errMsg}}</div>
             <button class="btn" @click="regist">注册</button>
+            <span class="back" @click="goToUrl('login')">返回登陆</span>
         </div>
         
     </div>
@@ -41,6 +42,9 @@
             this.getImg();
         },
         methods:{
+            goToUrl:function(url){
+                this.$router.push(url);
+            },
             getMsg:function(){
                 axios.post(this.GLOBAL_.apiUrl+"api/sms/verify",
                 qs.stringify({
@@ -49,46 +53,80 @@
                     captcha_key:this.vimgkey
                 }),this.GLOBAL_.headers).then(res=>{
                     console.log(res);
-                    if(res.data.status==false){
-                        this.errMsg = "验证码错误"
+                    if(res.data.code==0){
+                          this.$toast(res.data.data);
                     }
                     else{
-                        this.errMsg = "";
+                            if(res.data.data=="INVALID_CAPTCHA")
+                            {
+                                this.$toast("图片验证码不正确");
+                            }
+                            else{
+                                this.$toast(res.data.data);
+                            }
+
                     }
                 })
             },
             getImg:function(){
                 axios.get(this.GLOBAL_.apiUrl+"api/captcha").then(res=>{
-                    this.vimg = res.data.data.url;
-                    this.vimgkey = res.data.data.key;
-                    this.vimgcode = "";
+                    if(res.data.code==0){
+                        this.vimg = res.data.data.url;
+                        this.vimgkey = res.data.data.key;
+                        this.vimgcode = "";
+                        
+                    }
+                    else{
+                        res.$toast(res.data.data)
+                    }
                 })
             },
             regist:function(){
-                let param = {
-                    mobile:this.mobile,
-                    verify:this.vcode,
-                    password:this.pwd,
-                    nickname:this.nickname
+                if(this.mobile==""){
+                    this.$toast("请输入手机号");
                 }
-                axios.post(this.GLOBAL_.apiUrl+"api/user/register",qs.stringify(param),this.GLOBAL_.headers)
-                .then(res=>{
-                    if(res.data.status==false){
-                        this.errMsg = res.data.data;
+                else if(this.vimgcode==""){
+                    this.$toast("请输入图片验证码");                    
+                }
+                else if(this.vimgcode==""){
+                    this.$toast("请输入短信验证码");                    
+                }
+                else{
+                    let param = {
+                        mobile:this.mobile,
+                        verify:this.vcode,
+                        password:this.pwd,
+                        nickname:this.nickname
                     }
-                    else{
-                        localStorage.setItem("accessToken",res.data.data.token);
-                        this.$router.push('finance');
-                    }
-                })
+                    axios.post(this.GLOBAL_.apiUrl+"api/user/register",qs.stringify(param),this.GLOBAL_.headers)
+                    .then(res=>{
+                        if(res.data.status==false){
+                            this.$toast(res.data.data);
+                            this.pwd="",
+                            this.nickname="",
+                            this.vcode = "",
+                            this.getImg()
+                        }
+                        else{
+                            localStorage.setItem("accessToken",res.data.data.token);
+                            this.waitPush(this,"注册成功","finance")
+                        }
+                    })
+                }
             }
         }
     }
 </script>
 
-<style lang="less">
-    @import "../../css/login.less";
 
+
+<style lang="less" scoped>
+    @import "../../css/login.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    .back{
+        text-align: center;
+        color:#666;
+    }
     .msg{
         display:none;
         position:fixed;

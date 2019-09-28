@@ -54,7 +54,8 @@ export default new Router({
         topShow:true,
         title:"账簿管理",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"me"
       }
     },
     {
@@ -64,7 +65,8 @@ export default new Router({
         isShow:false,
         topShow:false,
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"bookmange"
       }
     },
     {
@@ -74,6 +76,7 @@ export default new Router({
         isShow:false,
         topShow:true,
         title:"重置密码",
+        back:true
       }
     },
     {
@@ -84,7 +87,8 @@ export default new Router({
         topShow:true,
         back:true,
         title,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"finance"
       }
     },
     {
@@ -116,7 +120,8 @@ export default new Router({
         topShow:true,
         title:"记账成员管理",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"book"
       }
     },
     {
@@ -127,7 +132,8 @@ export default new Router({
         topShow:true,
         title:"记账成员添加",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"membermange"
       }
     },
     {
@@ -138,7 +144,8 @@ export default new Router({
         topShow:true,
         title:"个人资料",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"me"
       }
     },
     {
@@ -149,7 +156,8 @@ export default new Router({
         topShow:true,
         title:'修改昵称',
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"personaldata"
       }
     },
     {
@@ -160,7 +168,7 @@ export default new Router({
         topShow:true,
         title:"设置手机号码",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
       }
     },
     {
@@ -171,7 +179,8 @@ export default new Router({
         topShow:true,
         title:"设置",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"me"
       }
     },
     {
@@ -182,11 +191,14 @@ export default new Router({
         topShow:true,
         title:"设置新密码",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"set"
       }
     },
     {
       path: '/finance',
+      // component:resolve => require(["../pages/app/finance"],resolve),
+
       component: Finance,
       meta:{
         isShow:true,
@@ -203,7 +215,8 @@ export default new Router({
         topShow:true,
         title:"账面收支明细",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"finance"
       }
     },
     {
@@ -224,7 +237,8 @@ export default new Router({
         topShow:true,
         title:"账面收支编辑",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"financedetail"
       }
     },
     {
@@ -235,7 +249,8 @@ export default new Router({
         topShow:true,
         title:"资产账户管理",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"book"
       }
     },
     {
@@ -246,7 +261,8 @@ export default new Router({
         topShow:true,
         title:"资产账户修改",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"assetsmange"
       }
     },
     {
@@ -257,7 +273,8 @@ export default new Router({
         topShow:true,
         title:"收入类别管理",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"book"
       }
     },
     {
@@ -268,7 +285,8 @@ export default new Router({
         topShow:true,
         title:"支出类别管理",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"book"
       }
     },
     {
@@ -279,7 +297,8 @@ export default new Router({
         topShow:true,
         title:"收入类别修改",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"incomemange"
       }
     },
     {
@@ -290,7 +309,8 @@ export default new Router({
         topShow:true,
         title:"支出类别修改",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"paymange"
       }
     },
     {
@@ -322,7 +342,8 @@ export default new Router({
         topShow:true,
         title:"支出类别添加",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"paymange"
       }
     },
     {
@@ -333,12 +354,15 @@ export default new Router({
         topShow:true,
         title:"资产账户添加",
         back:true,
-        requiresAuth: true
+        requiresAuth: true,
+        backUrl:"assetsmange"
       }
     },
     {
     	path:'/login',
-    	component: Login
+      // component: Login
+      component:resolve => require(["../pages/user/login"],resolve)
+      
     },
     {
       path:'/regist',
@@ -347,6 +371,11 @@ export default new Router({
     {
       path:"*",
       redirect:"/finance",
+      requiresAuth: true
+
     }
-  ]
+  ],
+  scrollBehavior (to,from,savePosition){
+    return {x:0,y:0}
+  }
 })

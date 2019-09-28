@@ -23,32 +23,45 @@
         },
         methods:{   
            addMember:function(){
-               let params={
-                    book_id:this.$route.query.id,
-                    mobile:this.member
+               if(this.member==""){
+                   this.$toast("请输入手机号")
                }
-               axios.post(this.GLOBAL_.apiUrl+`api/member/add?token=${this.token}`,qs.stringify(params)).then(
-                   res=>{
-                       if(res.data.code==0){
-                           this.$toast("添加成功");
-                           this.$router.push('memberMange');
-                       }
-                       else{
-                           this.$toast(res.data.data);
-                           
-                       }
-                   }
-               )
+               else if(!/^\d{11}$/.test(this.member))
+               {
+                   this.$toast("请检查手机格式")
+               }
+               else{
+                    this.$toast.loading({
+                            mask: true,
+                            message: '加载中...'
+                        });
+                    let params={
+                            book_id:this.$route.query.id,
+                            mobile:this.member
+                    }
+                    axios.post(this.GLOBAL_.apiUrl+`api/member/add?token=${this.token}`,qs.stringify(params)).then(
+                        res=>{
+                            if(res.data.code==0){
+                                this.waitPush(this,"添加成功","memberMange")
+                            }
+                            else{
+                                this.$toast.fail(res.data.data);
+                            }
+                        }
+                    )
+               }
            }
         }
     }
 </script>
 
-<style lang="less">
+
+<style lang="less" scoped>
     @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .addMemberBox{
-        margin-top:5em;
+        margin-top:@marginTop;
         .member{
             width:100%;
             outline:none;

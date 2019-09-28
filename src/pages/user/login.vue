@@ -42,24 +42,35 @@
  					captcha_code:this.captcha_code,
  					captcha_key:this.captcha_key
 				};
-				await axios.post(url,qs.stringify(param)).then(
-					 data=>{
-						if(data.data.status==false){
-							this.isErr=true;
-							this.errMsg = data.data.data;
-						}
-						else{
-							localStorage.setItem("accessToken",data.data.data.token);		
-						}
-				}).then(()=>{
-					this.$router.push("/finance");
-				})
+				if(this.username==""){
+					this.$toast("请输入手机号")
+				}
+				else if(this.password==""){
+					this.$toast("请输入密码")
+				}
+				else if(this.username.length!=11)
+				{
+					this.$toast("手机格式不正确")
+				}
+				else{
+					await axios.post(url,qs.stringify(param)).then(
+						res=>{
+							if(res.data.code==0){
+									localStorage.setItem("accessToken",res.data.data.token);	
+                            		this.waitPush(this,"登陆成功","finance")
+							}
+							else{
+								this.$toast(res.data.data);
+							}
+					})
+				}
 			}
 		}
 	}
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 	@import "../../css/login.less";
+    @import "../../../node_modules/vant/lib/index.css";
 </style>
 

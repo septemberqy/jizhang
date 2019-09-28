@@ -58,11 +58,14 @@
     </div>
 </template>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
+    @import "../../css/const.less";
+   
 
     .sequelBox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     .carema{
         width:5em!important;
@@ -73,7 +76,7 @@
 <script>
     import axios from "axios";
     import qs from "qs";
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import topBox from "../../components/public/top";
 
     export default{
@@ -123,7 +126,7 @@
                 axios.post(this.GLOBAL_.apiUrl+`api/record/sequel?token=${this.token}`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.code==0){
-                            this.$router.go(-1);
+                            this.waitPush(this,"保存成功",-1)
                         }
                         else{
                             this.$toast(res.data.data);
@@ -193,7 +196,7 @@
                 show:false,
                 addTime:"",
                  currentDate: new Date(),
-                 minDate: new Date(),
+                  minDate: new Date(2018,1,1),
                  maxDate: new Date(),
             }
         }

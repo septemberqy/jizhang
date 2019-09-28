@@ -36,7 +36,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../../node_modules/vant/lib/index.less";
     .finance-detail-cell{
         width:90%;

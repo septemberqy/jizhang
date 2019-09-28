@@ -75,7 +75,7 @@
             </div>
             <div class="images" v-else>
                 <inputBox>
-                    <span slot="deco" class="base">{{accountData.type==2?"支出":"收入"}}凭证</span>
+                    <span slot="deco" class="base left">{{accountData.type==2?"支出":"收入"}}凭证</span>
                     <span slot="input" class="base">
                             <img :src=item.thumbnail  v-for="(item,index) in this.imageList" :key=index class="carema">
                     </span>
@@ -132,7 +132,7 @@
 <script>
     import axios from "axios";
     import qs from "qs";
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import msgBox from "../../components/public/mesBox";
 
 
@@ -158,16 +158,21 @@
         },
         methods:{
             delAccount:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 let id = this.$route.query.id;
                 axios.post(this.GLOBAL_.apiUrl+`api/record/delete?id=${id}&token=${this.token}`).then(
                     res=>{
                         if(res.data.code==0)
                         {
-                            this.$toast("删除成功");
-                            this.$router.go(-1);
+                            this.msgShow = false;
+                            this.waitPush(this,"删除成功",-1)
+                            
                         }
                         else{
-                            this.$toast(res.data.data);
+                            this.$toast.fail(res.data.data);
                         }
                     }
                 )
@@ -195,12 +200,22 @@
                             )
             },
             getAccount:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 this.id = this.$route.query.id;
                 axios.get(this.GLOBAL_.apiUrl+`api/record/detail?id=${this.id}&token=${this.token}`).then(
                     res=>{
-                        this.accountData = res.data.data;
-                        for(let item of res.data.data.items){
-                            this.imageList = this.imageList.concat(item.images);
+                        if(res.data.code==0){
+                            this.$toast.clear();
+                            this.accountData = res.data.data;
+                            for(let item of res.data.data.items){
+                                this.imageList = this.imageList.concat(item.images);
+                            }
+                        }
+                        else{
+                            this.$toast.fail(res.data.data)
                         }
                     }
                 )
@@ -212,15 +227,16 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
-    @import "../../css/public.less";
 
+<style lang="less" scoped>
+    @import "../../css/const.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
     v-cloak{
         display:none
     }
     .financeEditBox{
-        margin-top:5em;
+        margin-top:@marginTop;
         .green{
             color:green;
         }

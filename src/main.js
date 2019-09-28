@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios';
 import $ from 'jquery'
-import {GLOBAL_} from "../config/global"
+import {GLOBAL_,waitPush} from "./api/global"
 import store from "./store/index"
 import echarts from 'echarts'
 
@@ -17,14 +17,23 @@ import { SwipeCell } from 'vant';
 import { Cell, CellGroup } from 'vant';
 import { Toast } from 'vant';
 import { Uploader } from 'vant';
+import { Loading } from 'vant';
+import { Overlay } from 'vant';
+import { Pagination } from 'vant';
+import { PullRefresh } from 'vant';
+import { List } from 'vant';
 
+Vue.use(List);
+Vue.use(PullRefresh);
+Vue.use(Pagination);
+Vue.use(Overlay);
+Vue.use(Loading);
 Vue.use(Uploader);
 Vue.use(Toast);
 Vue.use(Cell).use(CellGroup);
 Vue.use(SwipeCell);
 Vue.use(Button);
 Vue.use(Popup);
-
 Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(DatetimePicker);
@@ -36,6 +45,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$axios = axios;
 Vue.prototype.GLOBAL_ = GLOBAL_;
+Vue.prototype.waitPush = waitPush;
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {

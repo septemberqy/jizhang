@@ -1,14 +1,16 @@
 <template>
     <div class="box">
-        <van-swipe-cell  v-for="(item,index) in account" :key=index>
+        <van-swipe-cell  v-for="(item,index) in account" :key=index class="cateType">
             <van-cell :border="false" :title=item.name :value=item.balance value-class="in"/>
             <template slot="right">
-                <van-button square type="primary" text="编辑" @click="assetsedit(item.id,item.name,item.type)"/>
+                <van-button square type="primary" text="编辑" @click="assetsedit(item.id,item.name,item.type,item.remark)"/>
                 <van-button square type="danger" text="删除" @click="showPopup(item.id)"/>
             </template>
         </van-swipe-cell>
-        <div class="addBottom bottombase" @click="goToUrl('assetsadd')" v-if="this.account!=''">
-                        添加资产账户
+        <div class="assetsMangeBox">
+            <div class="assetsMangeBtn bottombase" @click="goToUrl('assetsadd')" v-if="this.account!=''">
+                            添加资产账户
+            </div>
         </div>
         <van-popup v-model="show">
             <msgBox>
@@ -21,7 +23,7 @@
 
 <script>
     import axios from "axios";
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import msgBox from "../../components/public/mesBox";
 
     
@@ -40,28 +42,50 @@
         },
         methods:{
             getAccount:function(token){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+"api/account?token="+this.token).then(
                     res=>{
-                        this.account = res.data.data;
+                        if(res.data.code==0)
+                        {
+                            this.$toast.clear();
+                            this.account = res.data.data;
+                        }
+                        else{
+                            this.$toast.fail(res.data.data)
+                        }
                     }
                 )
             },
-            assetsedit:function(id,name,type){
-                this.$router.push({path:"assetsedit",query:{id,name,type}})
+            assetsedit:function(id,name,type,remark){
+                this.$router.push({path:"assetsedit",query:{id,name,type,remark}})
             },
             showPopup:function(id){
                 this.delId = id;
                 this.show=true;
             },
             delAccount:function(){
+                 this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 if(this.delId!="")
                 {
                     axios.post(this.GLOBAL_.apiUrl+`api/account/delete?id=${this.delId}&token=${this.token}`).then(
                         res=>{
                             if(res.data.code==0){
-                                this.getAccount(this.token);
-                                this.show=false;
+                                this.waitPush(this,"删除成功","none")
+                                this.show=false;                        
+                                setTimeout(()=>{
+                                    this.getAccount(this.token);        
+                                },this.GLOBAL_.waittime)
+                               
+                            }else{
+                                this.$toast.fail(res.data.data)
                             }
+                            
                         }
                     )
                 }
@@ -77,18 +101,29 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
-    @import "../../css/public.less";
 
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/public.less";
+    @import "../../css/const.less";
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
+        .cateType{
+            border-bottom:1px solid #eee;
+            margin:0 auto;
+        }
         .in{
             color:red;
         }
+        .assetsMangeBox{
+            position:fixed;
+            bottom:0em;
+            width:100%;
+            height:4em;
+            background:#fff;
+            .assetsMangeBtn{
+                margin-top:1em;
+            }
+        }
     }
-
-   
-
-    
 </style>

@@ -13,7 +13,7 @@
     </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped> 
     @import "../../css/public.less";
     
     .yzmmsgbox{

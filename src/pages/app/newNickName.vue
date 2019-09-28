@@ -16,26 +16,34 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import axios from "axios";
     import qs from "qs";
     export default{
         methods:{
             updateNickname:function(){
-                let params ={
-                    nickname:this.name
+                if(this.name==""){
+                    this.$toast("请输入昵称")
                 }
-                axios.post(this.GLOBAL_.apiUrl+`api/user/profile/update?token=${this.token}`,qs.stringify(params)).then(
-                    res=>{
-                        if(res.data.code==0){
-                            this.$toast(res.data.data);
-                            this.$router.go(-1);
-                        }
-                        else{
-                            this.$toast(res.data.data);
-                        }
+                else{
+                    this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    let params ={
+                        nickname:this.name
                     }
-                )
+                    axios.post(this.GLOBAL_.apiUrl+`api/user/profile/update?token=${this.token}`,qs.stringify(params)).then(
+                        res=>{
+                            if(res.data.code==0){
+                                this.waitPush(this,"修改成功","personaldata")
+                            }
+                            else{
+                                this.$toast.fail(res.data.data);
+                            }
+                        }
+                    )
+                }
             }
         },
         components:{
@@ -54,12 +62,14 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+
+<style lang="less" scoped>
+      @import "../../css/public.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
 
     .nicknameBox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 
 </style>

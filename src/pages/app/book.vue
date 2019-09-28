@@ -1,6 +1,5 @@
 <template>
     <div class="box">
-        <titleCell></titleCell>
         <inputBox id="assetsmange">
             <span slot="icon" class="base icon">
                 <img src="../../assets/images/icon_money.png"  >
@@ -10,7 +9,6 @@
                         <img src="../../assets/images/right.png">
                 </span>
         </inputBox>
-        <titleCell></titleCell>
         <inputBox id="incomemange">
             <span slot="icon" class="base icon">
                 <img src="../../assets/images/icon_in.png"  >
@@ -29,7 +27,6 @@
                         <img src="../../assets/images/right.png">
                 </span>
         </inputBox>
-        <titleCell></titleCell>
         <inputBox id="membermange">
             <span slot="icon" class="base icon">
                 <img src="../../assets/images/icon_member.png"  >
@@ -43,8 +40,8 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
-    import titleCell from "../../components/public/titil-cell"
+    import inputBox from "../../components/remember/inputDetail";
+    import titleCell from "../../components/public/titilCell"
     export default{
         components:{
             inputBox,
@@ -58,8 +55,10 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+    @import "../../css/const.less";
+
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 </style>

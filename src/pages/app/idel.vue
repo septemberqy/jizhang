@@ -28,40 +28,59 @@
         },
         methods:{
             addIdel:function(){
-                let params={
-                    content:this.content,
-                    contact:this.contact
+                if(this.content==""){
+                    this.$toast("请输入意见")
                 }
-                axios.post(this.GLOBAL_.apiUrl+`api/feedback/add?token=${this.token}`,qs.stringify(params)).then(
-                    res=>{
-                        if(res.data.code==0){
-                            this.$toast(res.data.data);
-                            this.$router.push('me');
-                        }
+                else{
+                    this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    let params={
+                        content:this.content,
+                        contact:this.contact
                     }
-                )
+                    axios.post(this.GLOBAL_.apiUrl+`api/feedback/add?token=${this.token}`,qs.stringify(params)).then(
+                        res=>{
+                            if(res.data.code==0){
+                                this.waitPush(this,res.data.data,"me")
+
+                            }
+                            else{
+                                this.$toast.fail(res.data.data);
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 </script>
 
-<style lang="less">
-    @import "../../css/public.less";
+
+<style lang="less" scoped>
+@import "../../css/public.less";
+    @import "../../css/const.less";
 
     .idelBox{
-        margin-top:5em;
+        margin-top:@marginTop;
+        box-sizing: border-box;
         .idel{
             width:100%;
             resize: none;
             height:8em;
             box-sizing: border-box;
             outline:none;
+            border:0;
+            // border-bottom:1px solid #eee;
         }
         .idelInput{
             width:100%;
             box-sizing: border-box;
-            height:2em;
+            height:3em;
             outline:none;
+            border:0;
+            border-bottom:1px solid #eee;
         }
         .bookBtn{
             margin-top:1em;

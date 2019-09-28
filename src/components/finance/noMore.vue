@@ -8,7 +8,7 @@
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../css/public.less";
 
     .backBox{

@@ -31,7 +31,7 @@
             <titleCell>
                 待收/待付
             </titleCell>
-            <inputBox>
+            <inputBox id="financedetail" :querys="{type:1}">
                 <span slot="deco" class="base">待收入</span>
                 <span slot="input" class="base">
                         <span class="in">{{parseFloat(waitIn).toFixed(2)}}</span>
@@ -39,7 +39,7 @@
                 </span>
             </inputBox>
 
-             <inputBox>
+             <inputBox id="financedetail" :querys="{type:2}">
                 <span slot="deco" class="base">待支出</span>
                 <span slot="input" class="base">
                         <span class="out">{{parseFloat(waitOut).toFixed(2)}}</span>
@@ -69,8 +69,8 @@
     import detail from "../../components/finance/detail";
     import {getMaxDay} from "../../api/getMaxDay.js";
     import {bt,colorList} from "../../api/charts.js";
-     import inputBox from "../../components/remember/input-detail"
-     import titleCell from "../../components/public/titil-cell"
+     import inputBox from "../../components/remember/inputDetail"
+     import titleCell from "../../components/public/titilCell"
     
     export default{
         mounted(){
@@ -91,11 +91,25 @@
         },
         methods:{
             getHome:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+"api/view/home?token="+this.token).then(
                     res=>{
-                        this.detailItems = res.data.data.account;
-                        this.waitIn = res.data.data.waitingForCollection; 
-                        this.waitOut = res.data.data.waitingForPayment;
+                        if(res.data.code==0){
+                            this.$toast.clear();
+                            this.detailItems = res.data.data.account;
+                            this.waitIn = res.data.data.waitingForCollection; 
+                            this.waitOut = res.data.data.waitingForPayment;
+                        }
+                        else{
+                            if(res.data.data=="INVALID_TOKEN")
+                            {
+                                this.$router.push("login")
+                            }
+                            this.$toast.fail(res.data.data)
+                        }
                     }
                 )
             },
@@ -155,20 +169,21 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../css/public.less";
- [v-cloak]{
-    display: none
-  }
+
+
+<style lang="less" scoped>
+   @import "../../css/public.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
+
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
         // height:3em;
 
        
     }
      #myChart{
             margin:4em auto 0;
-            
             width:80%;
             height:16em;
         }

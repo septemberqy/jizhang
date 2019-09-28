@@ -1,6 +1,5 @@
 <template>
     <div class="meBox">
-        <div class="bak"></div>
         <inputBox id="personalData">
             <span slot="icon" class="base ">
                 <img :src="personal.avatar_url" class="infoIcon" >
@@ -23,7 +22,6 @@
                         <img src="../../assets/images/right.png">
                 </span>
         </inputBox>
-        <div class="bak"></div>
         <inputBox id="bookmange">
             <span slot="icon" class="base">
                 <img src="../../assets/images/book.png"  class="bigIcon">
@@ -33,7 +31,6 @@
                         <img src="../../assets/images/right.png">
                 </span>
         </inputBox>
-        <div class="bak"></div>
         <inputBox id="idel">
             <span slot="icon" class="base">
                 <img src="../../assets/images/message.png"  class="bigIcon">
@@ -47,7 +44,7 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
+    import inputBox from "../../components/remember/inputDetail";
     import axios from "axios";
     import qs from "qs";
 
@@ -72,14 +69,21 @@
         },
         methods:{
             getInfo:function(){
+                this.$toast.loading({
+                    mask: true,
+                    message: '加载中...'
+                });
                 axios.get(this.GLOBAL_.apiUrl+`api/user/profile?token=${this.token}`).then(
                     res=>{
                         if(res.data.code==0){
+                            this.$toast.clear();
                             this.personal = res.data.data;
                             let m =  this.personal.mobile.split("");
                             m.splice(3,4,'****').join("");
                             this.personal.mobile = m.join("")
-                            
+                        }
+                        else{
+                            this.$toast.fail(res.data.data);
                         }
                     }
                 )
@@ -88,12 +92,13 @@
     }
 </script>
 
-<style lang="less">
+
+<style lang="less" scoped>
     @import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
-    
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
     .meBox{
-        margin-top:5em;
+        margin-top:@marginTop;
 
     }
 </style>

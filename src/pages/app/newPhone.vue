@@ -52,6 +52,10 @@
         },
         methods:{
             updatePhone:function(){
+                this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
                 let params={
                     password :this.password,
                     mobile:this.newPhone,
@@ -61,11 +65,11 @@
                 axios.post(this.GLOBAL_.apiUrl+`api/user/mobile?token=${this.token}`,qs.stringify(params)).then(
                     res=>{
                         if(res.data.code==0){
-                            this.$toast(res.data.data);
+                            this.$toast.success(res.data.data);
                             this.$router.go(-1);
                         }
                         else{
-                             this.$toast(res.data.data);
+                             this.$toast.fail(res.data.data);
                         }
                     }
                 )
@@ -83,6 +87,7 @@
                         if(res.data.code==0){
                             this.imgyzm="";
                             this.show=false;
+                            console.log(res);
                         }
                         else{
                             this.$toast(res.data.data);
@@ -98,11 +103,21 @@
                     this.$toast("手机格式不正确");
                 }
                 else{
+                    this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
                     axios.get(this.GLOBAL_.apiUrl+"api/captcha").then(
                         res=>{
-                            this.img = res.data.data.url;
-                            this.key =res.data.data.key;
-                            this.show=true;
+                            if(res.data.code==0)
+                            {
+                                this.img = res.data.data.url;
+                                this.key =res.data.data.key;
+                                this.show=true;
+                            }
+                            else{
+                                this.$toast.fail(res.data.data)
+                            }
                         }
                     )
                     
@@ -113,11 +128,14 @@
     }
 </script>
 
-<style lang="less">
-@import "../../css/public.less";
-    @import "../../../node_modules/vant/lib/index.less";
+
+<style lang="less" scoped>
+    @import "../../css/public.less";
+    @import "../../../node_modules/vant/lib/index.css";
+    @import "../../css/const.less";
+
     .newPhoneBox{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
     input{
         width:100%;

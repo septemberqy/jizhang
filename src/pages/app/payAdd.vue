@@ -14,8 +14,8 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
-    import titleCell from "../../components/public/titil-cell";
+    import inputBox from "../../components/remember/inputDetail";
+    import titleCell from "../../components/public/titilCell";
 
     import axios from "axios";
     import qs from "qs";
@@ -37,33 +37,47 @@
         methods:{
             
             addCategroy:function(){
-              
-                let params={
-                    parent_id:0,
-                    type:2,
-                    name:this.name,
-                    sort:10
+                if(this.name==""){
+                    this.$toast("请输入类型名称")
                 }
-                
-                axios.post(this.GLOBAL_.apiUrl+`api/category/create?token=${this.token}`,qs.stringify(params)).then(
-                    res=>{
-                        if(res.data.code==0){
-                            this.$toast("添加成功");
-                            this.$router.go(-1);
-                        }
+                else{
+                this.$toast.loading({
+                        mask: true,
+                        message: '加载中...'
+                    });
+                    let params={
+                        parent_id:0,
+                        type:2,
+                        name:this.name,
+                        sort:10
                     }
-                )
+                    
+                    axios.post(this.GLOBAL_.apiUrl+`api/category/create?token=${this.token}`,qs.stringify(params)).then(
+                        res=>{
+                            if(res.data.code==0){
+                                this.$toast.success("添加成功");
+                                this.$router.go(-1);
+                            }
+                            else{
+                                this.$toast.success(res.data.data);
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+
+
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
     @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 
      .addBottom{

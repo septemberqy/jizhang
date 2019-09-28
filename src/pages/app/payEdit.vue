@@ -14,8 +14,8 @@
 </template>
 
 <script>
-    import inputBox from "../../components/remember/input-detail";
-    import titleCell from "../../components/public/titil-cell";
+    import inputBox from "../../components/remember/inputDetail";
+    import titleCell from "../../components/public/titilCell";
 
     import axios from "axios";
     import qs from "qs";
@@ -58,12 +58,13 @@
     }
 </script>
 
-<style lang="less">
-    @import "../../../node_modules/vant/lib/index.less";
+<style lang="less" scoped>
+    @import "../../../node_modules/vant/lib/index.css";
     @import "../../css/public.less";
+    @import "../../css/const.less";
 
     .box{
-        margin-top:5em;
+        margin-top:@marginTop;
     }
 
      .addBottom{
